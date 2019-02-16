@@ -1,5 +1,6 @@
 Mini batch para evitar el insufrible copy/paste diario.
 
-cmd init [1]
+cmd init [y] [y/indefinido]
 
-[1] Opcional - crea el archivo local de ignore.
+[] Opcional - Valor: y - Crea el archivo local de ignore y exclude.<br>
+[] Opcional - Valor: y o indefinido - Si no se setea o se pasa "y" se crean/copian los archivos del proyecto.<br>
