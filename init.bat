@@ -1,29 +1,35 @@
+:: v3.0
 @echo off
 
-rem Obtiene parametro para crear o no el archivo exclude.
-set createExcludeFile=%~1
+rem Get param to create the exclude file.
+set createEternalFiles=%~1
+set createProjectFiles=%~2
 
-rem Obtiene el path de donde esta el archivo.
-set projectPath="%~dp0"
+if not defined createProjectFiles goto projectFiles
+if "%createProjectFiles%" == "y" goto projectFiles
+goto end
 
-rem Copia proxy.
-@ xcopy /s /i /Y "%projectPath%\files\proxy.conf.json" "%projectPath%" >NUL
-echo Copiado proxy.
+:projectFiles
+	rem Get the path where it's this file.
+	set projectPath="%~dp0"
 
-rem Copia auth service.
-@ xcopy /s /i /Y "%projectPath%\files\authorization.service.ts" "%projectPath%\src\app" >NUL
-echo Copiado auth service.
+	rem Copy proxy.
+	@ xcopy /s /i /Y "%projectPath%\files\proxy.conf.json" "%projectPath%" >NUL
+	echo Proxy file copied.
 
-::Crea archivo exclude y agrega lo que quiero excluir localmente.
-if "%createExcludeFile%" == "1" (
-	(
-		echo #Files and folders to ignore
-		echo /files
-		echo .vscode/
-		echo init.bat
-	) > "%projectPath%\.git\info\exclude"
+	rem Copy auth service.
+	set /p authPackage=<files\auth_package.txt
+	@ xcopy /s /i /Y "%projectPath%\files\authorization.service.ts" "%projectPath%\node_modules\%authPackage%\src\app\authorization" >NUL
+	echo Auth service copied.
+:end
 
-	echo Creado ignore local.
+rem Copie exclude file and pre-push hook.
+if "%createEternalFiles%" == "y" (
+	@ xcopy /s /i /Y "%projectPath%\files\exclude" "%projectPath%\.git\info" >NUL
+	echo Local ignore file copied.
+	
+	@ xcopy /s /i /Y "%projectPath%\files\pre-push" "%projectPath%\.git\hooks" >NUL
+	echo Pre-push hook copied.
 )
 
-echo Gracias, vuelva prontos!
+echo Thank you, come again!
